@@ -19,13 +19,14 @@ def get_db():
         db.close()
 
 
-@app.get("/items/{item_id}", response_model=schemas.AutonomousSystem)
-def read_as_by_number(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud.get_item(db, item_id=item_id)
+# Given an AS number, return AS information
+@app.get("/as/{as_id}", response_model=schemas.AutonomousSystem)
+def read_as_by_number(as_id: int, db: Session = Depends(get_db)):
+    db_item = crud.get_as(db, as_id=as_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
 
 
-df = pandas.read_csv("sql_app/db_data/ip2asn-combined.tsv", sep='\t')
+df = pandas.read_csv("sql_app/db_data/ip2asn-combined.tsv", header=0, sep='\t')
 df.to_sql(con=engine, index_label='id', name=AutonomousSystem.__tablename__, if_exists='replace')
